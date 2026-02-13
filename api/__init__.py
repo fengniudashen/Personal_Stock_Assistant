@@ -1,0 +1,3 @@
+"""
+VibeSing API Package
+"""

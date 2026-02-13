@@ -1,0 +1,271 @@
+# ============================================================
+# VibeSing 高音觉醒 - 自动化标注系统配置
+# ============================================================
+
+# ============ 数据路径 ============
+paths:
+  raw_videos: "./data/raw_videos"
+  audio_raw: "./data/raw_audios"
+  audio_clean: "./data/audio_clean"
+  clips: "./data/clips"
+  features: "./data/features"
+  faiss_index: "./data/faiss/index.bin"
+  export: "./data/export"
+  metadata_db: "sqlite:///./data/vibesing.db"  # 默认SQLite，可改PostgreSQL
+
+# ============ 数据源配置 ============
+sources:
+  bilibili:
+    enabled: true
+    urls: []  # 在此填入B站视频URL
+    quality: "bestaudio"
+    subtitle: true
+
+  youtube:
+    enabled: true
+    channels: []
+    keywords:
+      - "vocal technique"
+      - "mixed voice"
+      - "belting tutorial"
+      - "singing lesson"
+    max_results: 50
+
+  douyin:
+    enabled: false
+    cookie_file: "./cookies/douyin.txt"
+    keywords:
+      - "唱歌技巧"
+      - "高音训练"
+
+  tieba:
+    enabled: true
+    forum: "高音"
+    keywords:
+      - "求鉴定"
+      - "这个声音"
+      - "唱的怎么样"
+      - "帮我听听"
+    pages: 10
+
+  datasets:
+    - name: "GTSinger"
+      url: "https://github.com/GTSinger/GTSinger/releases"
+      type: "zip"
+    - name: "VocalSet"
+      url: "https://zenodo.org/record/1203819"
+      type: "tar.gz"
+
+  songs:
+    - name: "贝加尔湖畔"
+      artist: "李健"
+      technique: "LightMix"
+      segments:
+        - start: "1:23"
+          end: "1:45"
+          label: "LightMix"
+    - name: "死了都要爱"
+      artist: "信乐团"
+      technique: "StrongMix"
+      segments:
+        - start: "2:10"
+          end: "2:30"
+          label: "StrongMix"
+    - name: "暗号"
+      artist: "周杰伦"
+      technique: "Falsetto"
+      segments:
+        - start: "1:00"
+          end: "1:20"
+          label: "Falsetto"
+
+# ============ 下载参数 ============
+download:
+  format: "bestaudio/best"
+  rate_limit: "1M"
+  retries: 3
+  output_template: "%(title)s-%(id)s.%(ext)s"
+
+# ============ 过滤条件 ============
+filters:
+  min_duration: 30
+  max_duration: 3600
+  min_sample_rate: 22050
+  formats:
+    - "mp4"
+    - "webm"
+    - "mp3"
+    - "wav"
+    - "m4a"
+
+# ============ 音频规格 ============
+audio:
+  sample_rate: 44100   # CD音质，保留完整泛音（声乐分析最佳）
+  channels: 1          # Mono单声道
+  bit_depth: 16
+  format: "wav"
+
+# ============ UVR5 人声分离 ============
+uvr5:
+  model: "model_bs_roformer_ep_368_sdr_12.9628.ckpt"
+  device: "cuda"  # 或 cpu
+  batch_size: 4
+  # 备选方案：使用 demucs
+  use_demucs: true
+  demucs_model: "htdemucs"
+
+# ============ 切片策略 ============
+slicing:
+  method: "hybrid"  # vad, energy, hybrid
+  target_duration: 4.0
+  min_duration: 2.5
+  max_duration: 6.0
+  overlap: 0.5
+  fade_duration: 0.01
+  silence_threshold: -40  # dB
+  min_silence_duration: 0.3
+
+vad:
+  aggressiveness: 3  # 0-3
+  frame_duration_ms: 30
+  padding_duration_ms: 300
+
+# ============ ASR与关键词 ============
+whisper:
+  model: "large-v3"
+  language: "zh"
+  device: "cuda"
+  # 使用本地faster-whisper降低延迟
+  use_faster_whisper: true
+
+keywords:
+  # === 主标签关键词（发声机制，互斥）===
+  StrongMix: ["强混", "强混声", "strong mix", "结实的混声", "有力的混声", "胸混"]
+  LightMix: ["薄混", "轻混", "light mix", "弱混", "弱混声", "头混"]
+  Falsetto: ["假声", "falsetto", "虚声", "气假声"]
+  Chest: ["胸声", "chest voice", "真声", "胸腔"]
+  Head: ["头声", "head voice", "头腔共鸣"]
+  Breathy: ["漏气", "气声", "breathy", "虚", "闭合不足"]
+  Strained: ["挤", "挤卡", "喉部紧张", "strained", "卡嗓", "顶嗓", "挤喉"]
+  Neutral: ["正常", "标准", "示范", "正确", "标准音色"]
+  Invalid: ["噪音", "不是唱", "说话", "杂音"]
+
+  # === 辅标签关键词（共鸣/色彩/技巧，可叠加）===
+  Pharyngeal: ["咽音", "咽腔", "pharyngeal", "咽壁", "挂咽壁"]
+  Twang: ["收窄", "twang", "鼻腔收窄", "鼻音", "哭腔"]
+  Demo_Correct: ["正确示范", "正确的", "这样唱", "应该这样"]
+  Demo_Error: ["错误示范", "不要这样", "错误的", "避免"]
+
+# ============ 特征提取 ============
+features:
+  mel:
+    n_mels: 128
+    n_fft: 2048
+    hop_length: 512
+    fmax: 8000
+  pitch:
+    method: "crepe"  # crepe, pyin, harvest
+    model_capacity: "tiny"
+  embedding:
+    model: "openl3"  # openl3, clap, hubert
+    hop_size: 0.1
+    content_type: "music"
+    embedding_size: 512
+  heuristics:
+    enable_h1h2: true
+    enable_spectral_tilt: true
+    enable_jitter: true
+    enable_shimmer: true
+    enable_hnr: true
+
+# ============ 弱监督融合 ============
+weak_supervision:
+  asr_weight: 0.4
+  heuristic_weight: 0.2
+  model_weight: 0.3
+  neighbor_weight: 0.1
+  confidence_threshold: 0.7
+  min_agreement: 2  # 至少2个源同意
+
+# ============ 聚类与去重 ============
+clustering:
+  method: "hdbscan"
+  min_cluster_size: 3
+  min_samples: 2
+  similarity_threshold: 0.85
+  faiss_nprobe: 16
+  dedup_threshold: 0.95  # 相似度>95%视为重复
+
+# ============ 主动学习 ============
+active_learning:
+  strategy: "uncertainty_diversity"
+  uncertainty_weight: 0.7
+  batch_size: 50
+  diversity_lambda: 0.1
+  conflict_bonus: 0.3  # 冲突样本额外加分
+
+# ============ 人工审核 (Step 10) ============
+# 所有切片在进入训练集前须经人工审核确认
+human_review:
+  review_file: "data/review_results.json"   # 审核结果存储文件
+  fused_file: "data/fused_labels.json"      # 融合标签来源
+  auto_approve_confidence: 0.92             # 批量自动通过阈值 (≥此值且无冲突)
+  require_approval_for_export: true         # 导出时是否强制要求审核通过
+
+# ============ 标签体系 (v2 - 机制/共鸣分离) ============
+# 设计原则：主标签=发声机制（互斥单选） + 辅标签=共鸣技术/色彩（可叠加多选）
+labels:
+  primary:   # 发声机制/状态（单选，互斥）
+    - StrongMix     # 强混声 - 头胸声平衡偏胸声，闭合强
+    - LightMix      # 弱混声/轻混 - 头胸声平衡偏头声，轻盈
+    - Falsetto      # 假声 - 声带边缘振动
+    - Chest         # 胸声 - 中低音自然发声（<C4片段）
+    - Head          # 头声 - 头腔主导非混合（古典/美声）
+    - Breathy       # 漏气 - 声门闭合不足
+    - Strained      # 挤卡 - 喉部过度紧张
+    - Neutral       # 标准/无明显特征
+    - Invalid       # 无效（噪音/非歌唱）
+
+  secondary:  # 共鸣技术/色彩/上下文（多选，可叠加）
+    - Pharyngeal      # 咽音 - 咽腔收紧，3-5kHz增强
+    - Twang           # 收窄 - 鼻咽收窄，2-4kHz增强
+    - HighRange       # 高音区(C5/523Hz以上，可自动判定)
+    - SuperHighRange  # 超高音区(C6/1047Hz以上)
+    - VowelMod        # 元音修正
+    - Vibrato         # 颤音
+    - Glissando       # 滑音
+    - Runs            # 跑音技巧
+    - Demo_Correct    # 正确示范（教学来源）
+    - Demo_Error      # 错误示范（教学来源）
+
+  quality_flags:  # 音频质量问题（多选）
+    - LowSNR        # 信噪比低 (<15dB)
+    - HighReverb     # 混响过重
+    - Clipping       # 削波失真 (>1%)
+    - Unstable       # 音高不稳/抖动异常
+    - MultiVoice     # 多人声重叠
+    - Distortion     # 音色失真/设备问题
+
+# ============ 多任务训练配置 ============
+training:
+  primary_loss_weight: 0.7
+  secondary_loss_weight: 0.2
+  quality_loss_weight: 0.1
+  primary_class_weights:
+    StrongMix: 1.0
+    LightMix: 1.0
+    Falsetto: 1.0
+    Chest: 0.5
+    Head: 0.5
+    Breathy: 1.5
+    Strained: 1.5
+    Neutral: 0.8
+    Invalid: 0.8
+  min_samples_per_primary: 1500
+  min_positive_per_secondary: 800
+
+# ============ Label Studio 配置 ============
+label_studio:
+  host: "http://localhost:8080"
+  api_key: ""  # 启动后填入
+  project_name: "VibeSing Timbre Annotation"

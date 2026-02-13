@@ -1,0 +1,3 @@
+"""
+VibeSing Models Package
+"""

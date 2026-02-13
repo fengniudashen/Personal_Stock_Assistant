@@ -1,0 +1,83 @@
+# =============================
+# VibeSing 高音觉醒 - .gitignore
+# =============================
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ===== 虚拟环境 =====
+.venv/
+venv/
+env/
+
+# ===== 数据文件 (不提交大文件) =====
+data/raw_audio/
+data/separated/
+data/clips/
+data/embeddings/
+data/export/
+data/models/
+data/faiss/
+*.wav
+*.mp3
+*.mp4
+*.flac
+*.ogg
+*.m4a
+*.aac
+*.avi
+*.mkv
+*.webm
+
+# ===== 数据库 =====
+*.db
+*.sqlite
+*.sqlite3
+
+# ===== Cookie / 密钥 =====
+cookies/
+*.cookie
+*.cookies
+.env
+.env.local
+
+# ===== 日志 =====
+*.log
+logs/
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ===== Docker =====
+postgres_data/
+
+# ===== Label Studio =====
+ls_data/
+
+# ===== ONNX 模型 =====
+*.onnx
+
+# ===== 临时文件 =====
+*.tmp
+*.bak
+temp/
+tmp/
+
+# ===== 保留空目录的占位文件 =====
+!data/.gitkeep
+!data/raw_audio/.gitkeep
+!data/clips/.gitkeep
+!cookies/.gitkeep

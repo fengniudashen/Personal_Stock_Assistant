@@ -1,0 +1,180 @@
+/*
+ * VibeSing 高音觉醒 - Label Studio 自定义样式
+ * 优化标注界面的视觉体验
+ */
+
+/* ===== 全局样式 ===== */
+.lsf-main-view {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+}
+
+/* ===== 标签选择器样式 ===== */
+.lsf-choices .lsf-choice {
+  border-radius: 6px;
+  padding: 4px 12px;
+  margin: 3px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.lsf-choices .lsf-choice:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.lsf-choices .lsf-choice--selected {
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.4);
+  transform: scale(1.05);
+}
+
+/* ===== 主标签配色（发声机制） ===== */
+[data-value="StrongMix"] { background: #10b981 !important; color: #fff; }
+[data-value="LightMix"]  { background: #f59e0b !important; color: #fff; }
+[data-value="Falsetto"]  { background: #c084fc !important; color: #fff; }
+[data-value="Chest"]     { background: #60a5fa !important; color: #fff; }
+[data-value="Head"]      { background: #818cf8 !important; color: #fff; }
+[data-value="Breathy"]   { background: #fb923c !important; color: #fff; }
+[data-value="Strained"]  { background: #ef4444 !important; color: #fff; }
+[data-value="Neutral"]   { background: #94a3b8 !important; color: #fff; }
+[data-value="Invalid"]   { background: #6b7280 !important; color: #fff; }
+
+/* ===== 辅标签配色（共鸣/色彩） ===== */
+[data-value="Pharyngeal"]    { background: #fbbf24 !important; color: #333; }
+[data-value="Twang"]         { background: #fcd34d !important; color: #333; }
+[data-value="HighRange"]     { background: #c7d2fe !important; color: #333; }
+[data-value="SuperHighRange"]{ background: #a5b4fc !important; color: #fff; }
+[data-value="VowelMod"]      { background: #e9d5ff !important; color: #333; }
+[data-value="Vibrato"]       { background: #fbcfe8 !important; color: #333; }
+[data-value="Glissando"]     { background: #d9f99d !important; color: #333; }
+[data-value="Runs"]          { background: #bae6fd !important; color: #333; }
+[data-value="Demo_Correct"]  { background: #d1fae5 !important; color: #333; }
+[data-value="Demo_Error"]    { background: #fee2e2 !important; color: #333; }
+
+/* ===== 质量旗标配色 ===== */
+[data-value="LowSNR"]        { background: #fee2e2 !important; color: #dc2626; }
+[data-value="HighReverb"]     { background: #ffedd5 !important; color: #ea580c; }
+[data-value="Clipping"]       { background: #fecaca !important; color: #b91c1c; }
+[data-value="Unstable"]       { background: #f3e8ff !important; color: #7c3aed; }
+[data-value="MultiVoice"]     { background: #dbeafe !important; color: #2563eb; }
+[data-value="Distortion"]     { background: #fef3c7 !important; color: #92400e; }
+
+/* ===== AI 建议区域 ===== */
+.ai-suggestion-box {
+  background: linear-gradient(135deg, #e8f4fd 0%, #f0f4ff 100%);
+  border-left: 4px solid #4285f4;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 10px 0;
+}
+
+.ai-suggestion-box .confidence-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: #e0e0e0;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.ai-suggestion-box .confidence-bar .fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #4285f4, #34a853);
+  transition: width 0.3s ease;
+}
+
+/* ===== 热键提示 ===== */
+.hotkey-hint {
+  display: inline-block;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 11px;
+  color: #666;
+  margin-left: 4px;
+  font-family: monospace;
+}
+
+/* ===== 音频播放器增强 ===== */
+.lsf-audio-tag {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== 质量标记 ===== */
+.quality-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  border: 1px solid transparent;
+}
+
+.quality-flag.active {
+  border-color: #ff6b6b;
+  background: #fff0f0;
+}
+
+/* ===== 元数据面板 ===== */
+.metadata-panel {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  color: #555;
+}
+
+.metadata-panel .meta-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.metadata-panel .meta-label {
+  font-weight: 600;
+  color: #333;
+}
+
+/* ===== 评分星星 ===== */
+.lsf-rating .lsf-rating__star {
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.lsf-rating .lsf-rating__star:hover {
+  transform: scale(1.2);
+}
+
+/* ===== 响应式优化 ===== */
+@media (max-width: 768px) {
+  .lsf-choices .lsf-choice {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+}
+
+/* ===== 深色模式支持 ===== */
+@media (prefers-color-scheme: dark) {
+  .ai-suggestion-box {
+    background: linear-gradient(135deg, #1a2332 0%, #1e293b 100%);
+    border-left-color: #60a5fa;
+  }
+
+  .metadata-panel {
+    background: #1e293b;
+    color: #cbd5e1;
+  }
+
+  .metadata-panel .meta-label {
+    color: #e2e8f0;
+  }
+
+  .metadata-panel .meta-row {
+    border-bottom-color: #334155;
+  }
+}

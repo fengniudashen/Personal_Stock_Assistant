@@ -1,3 +1,0 @@
-"""
-VibeSing Utils Package
-"""

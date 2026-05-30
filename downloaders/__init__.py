@@ -1,3 +1,0 @@
-"""
-VibeSing Downloaders Package
-"""
